@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 
 function Header({ onChangeMode, children }) {
@@ -56,8 +56,44 @@ function Create({ onCreate }) {
         ></textarea>
       </p>
       <p>
-        <button type="submit" onClick={handleClick}>
-          submit
+        <button type="button" onClick={handleClick}>
+          생성
+        </button>
+      </p>
+    </div>
+  );
+}
+
+function Update({ onUpdate, item }) {
+  const [title, setTitle] = useState(item.title);
+  const [content, setContent] = useState(item.content);
+
+  const handleClick = () => {
+    onUpdate(title, content);
+    setTitle("");
+    setContent("");
+  };
+
+  return (
+    <div>
+      <p>
+        <input
+          type="text"
+          placeholder="title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        ></input>
+      </p>
+      <p>
+        <textarea
+          placeholder="content"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+        ></textarea>
+      </p>
+      <p>
+        <button type="button" onClick={handleClick}>
+          수정
         </button>
       </p>
     </div>
@@ -89,6 +125,13 @@ function App() {
     setMode("HOME");
   };
 
+  const handleUpdate = (title, content) => {
+    setList(
+      list.map((item) => (item.id === id ? { ...item, title, content } : item))
+    );
+    setMode("READ");
+  };
+
   return (
     <>
       <Header onChangeMode={() => setMode("HOME")}>정석민 이력서</Header>
@@ -100,10 +143,18 @@ function App() {
         }}
       ></Nav>
       <Article title={title} content={content}></Article>
-      {mode === "CREATE" ? (
-        <Create onCreate={handleCreate} />
-      ) : (
+      {mode === "CREATE" && <Create onCreate={handleCreate} />}
+      {mode === "HOME" && (
         <button onClick={() => setMode("CREATE")}>글 생성</button>
+      )}
+      {mode === "READ" && (
+        <button onClick={() => setMode("UPDATE")}>글 수정</button>
+      )}
+      {mode === "UPDATE" && (
+        <Update
+          onUpdate={handleUpdate}
+          item={list.find((item) => item.id === id)}
+        />
       )}
     </>
   );
