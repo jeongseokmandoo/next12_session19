@@ -1,8 +1,7 @@
-import { useState } from "react";
 import "./App.css";
 
-function Header({ children }) {
-  return <h1>{children}</h1>;
+function Header({ onChangeMode, children }) {
+  return <h1 onClick={onChangeMode}>{children}</h1>;
 }
 
 function Article({ content, title }) {
@@ -40,7 +39,7 @@ function App() {
 
   return (
     <>
-      <Header>정석민 이력서</Header>
+      <Header onChangeMode={() => alert("hi")}>정석민 이력서</Header>
       <Nav list={list}></Nav>
       <Article title={title} content={content}></Article>
     </>
