@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 function Header({ onChangeMode, children }) {
@@ -28,15 +28,50 @@ function Nav({ onChangeMode, list }) {
   );
 }
 
+function Create({ onCreate }) {
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
+  const handleClick = () => {
+    onCreate(title, content);
+    setTitle("");
+    setContent("");
+  };
+
+  return (
+    <div>
+      <p>
+        <input
+          type="text"
+          placeholder="title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        ></input>
+      </p>
+      <p>
+        <textarea
+          placeholder="content"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+        ></textarea>
+      </p>
+      <p>
+        <button type="submit" onClick={handleClick}>
+          submit
+        </button>
+      </p>
+    </div>
+  );
+}
+
 function App() {
   const [mode, setMode] = useState("HOME");
   const [id, setId] = useState(-1);
-
-  const list = [
-    { id: 0, title: "이름", desc: "정석민" },
-    { id: 1, title: "생년월일", desc: "2000.03.27" },
-    { id: 2, title: "학력", desc: "고려대학교" },
-  ];
+  const [list, setList] = useState([
+    { id: 0, title: "이름", content: "정석민" },
+    { id: 1, title: "생년월일", content: "2000.03.27" },
+    { id: 2, title: "학력", content: "고려대학교" },
+  ]);
 
   let title;
   let content;
@@ -46,8 +81,13 @@ function App() {
     content = "안녕하세요. 정석민입니다.";
   } else if (mode === "READ") {
     title = list[id].title;
-    content = list[id].desc;
+    content = list[id].content;
   }
+
+  const handleCreate = (title, content) => {
+    setList([...list, { title, content, id: list.length }]);
+    setMode("HOME");
+  };
 
   return (
     <>
@@ -60,6 +100,11 @@ function App() {
         }}
       ></Nav>
       <Article title={title} content={content}></Article>
+      {mode === "CREATE" ? (
+        <Create onCreate={handleCreate} />
+      ) : (
+        <button onClick={() => setMode("CREATE")}>글 생성</button>
+      )}
     </>
   );
 }
